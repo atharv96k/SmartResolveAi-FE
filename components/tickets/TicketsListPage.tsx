@@ -17,7 +17,6 @@ const TicketsListPage: React.FC = () => {
         setIsLoading(true);
         const fetchedTickets = await api.getTickets();
 
-        // 1. Priority Map (Using strings to avoid Enum import errors)
         const statusPriority: Record<string, number> = {
           'OPEN': 1,
           'IN_PROGRESS': 2,
@@ -25,16 +24,13 @@ const TicketsListPage: React.FC = () => {
           'CLOSED': 4,
         };
 
-        // 2. Sort Logic
         const sorted = [...fetchedTickets].sort((a, b) => {
-          // Normalize status to uppercase just in case
           const priorityA = statusPriority[a.status.toUpperCase()] || 5;
           const priorityB = statusPriority[b.status.toUpperCase()] || 5;
 
           if (priorityA !== priorityB) {
             return priorityA - priorityB;
           }
-          // Secondary sort: Newest first
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
 
@@ -55,10 +51,17 @@ const TicketsListPage: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-white">My Support Tickets</h1>
+
+        {/* Smaller on mobile, full size on sm+ */}
+        <h1 className="text-lg sm:text-3xl font-bold text-white">My Support Tickets</h1>
+
+        {/* Smaller button on mobile */}
         <Link to="/tickets/new">
-          <Button>Create New Ticket</Button>
+          <Button size="sm" className="text-xs px-3 py-1.5 sm:text-sm sm:px-4 sm:py-2">
+            Create New Ticket
+          </Button>
         </Link>
+
       </div>
 
       {tickets.length === 0 ? (
@@ -66,34 +69,31 @@ const TicketsListPage: React.FC = () => {
           <p className="text-slate-400">You haven't created any tickets yet.</p>
         </div>
       ) : (
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  {tickets.map((ticket) => {
-    // 1. Determine status for styling
-    const status = ticket.status.toUpperCase();
-    const isFinished = status === 'RESOLVED' || status === 'CLOSED';
-    const isActive = status === 'IN_PROGRESS';
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {tickets.map((ticket) => {
+            const status = ticket.status.toUpperCase();
+            const isFinished = status === 'RESOLVED' || status === 'CLOSED';
+            const isActive = status === 'IN_PROGRESS';
 
-    return (
-      <div 
-        key={ticket._id} 
-        // Added h-full to keep all cards the same height
-        className={`transition-all duration-500 h-full ${
-          isFinished 
-            ? "opacity-40 grayscale scale-[0.98]" 
-            : isActive 
-            ? "opacity-100 ring-2 ring-sky-500/30 rounded-xl shadow-lg shadow-sky-500/10" 
-            : "opacity-100"
-        }`}
-      >
-        {/* Pass h-full here too so the TicketCard stretches */}
-        <TicketCard ticket={ticket} />
-      </div>
-    );
-  })}
-</div>
+            return (
+              <div
+                key={ticket._id}
+                className={`transition-all duration-500 h-full ${
+                  isFinished
+                    ? "opacity-40 grayscale scale-[0.98]"
+                    : isActive
+                    ? "opacity-100 ring-2 ring-sky-500/30 rounded-xl shadow-lg shadow-sky-500/10"
+                    : "opacity-100"
+                }`}
+              >
+                <TicketCard ticket={ticket} />
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
 };
 
-export default TicketsListPage; 
+export default TicketsListPage;
