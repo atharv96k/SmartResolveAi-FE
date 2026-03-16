@@ -177,30 +177,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      {/* FINAL CTA */}
-      <section className="max-w-4xl mx-auto px-6 text-center">
-        <div className="bg-sky-500/10 border border-sky-500/20 rounded-3xl p-12">
-
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Start Resolving Tickets Faster
-          </h2>
-
-          <p className="text-slate-400 mb-8">
-            Experience the power of AI-driven ticket management today.
-          </p>
-
-          {!isAuthenticated && (
-            <Link to="/signup">
-              <Button size="lg">
-                Create Free Account
-                <ArrowRight className="ml-2" size={18} />
-              </Button>
-            </Link>
-          )}
-        </div>
-      </section>
-
     </div>
   );
 };
