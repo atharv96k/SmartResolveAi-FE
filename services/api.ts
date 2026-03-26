@@ -12,7 +12,7 @@ interface SignupData extends LoginData {
 }
 
 interface UpdateUserData {
-  userId: string;
+  email: string; // Backend usually identifies by email or _id
   role?: string;
   skills?: string[];
 }
@@ -96,10 +96,13 @@ export const api = {
     return resData.ticket;
   },
 
-  getAllUsers: async (): Promise<User[]> => {
-    const response = await fetchWithAuth('/auth/users');
-    return response.json();
-  },
+getAllUsers: async (): Promise<User[]> => {
+  const response = await fetchWithAuth('/auth/users');
+  const data = await response.json();
+  // If your backend sends { users: [] }, use data.users. 
+  // If it sends the array directly, keep it as data.
+  return Array.isArray(data) ? data : data.users; 
+},
 
   updateUser: async (data: UpdateUserData): Promise<User> => {
     const response = await fetchWithAuth('/auth/update-user', {
@@ -125,5 +128,11 @@ export const api = {
     });
     const resData = await response.json();
     return resData.ticket;
+  },
+  deleteUser: async (id: string): Promise<{ message: string }> => {
+    const response = await fetchWithAuth(`/auth/users/${id}`, {
+      method: 'DELETE',
+    });
+    return response.json();
   },
 };

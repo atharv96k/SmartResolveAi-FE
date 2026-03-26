@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Ticket, Priority, TicketStatus } from '../../types';
+import { Ticket } from '../../types';
 
 interface TicketCardProps {
   ticket: Ticket;
@@ -24,21 +24,21 @@ const PriorityBadge: React.FC<{ priority?: string }> = ({ priority }) => {
 };
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
-    const s = status.toUpperCase();
-    const colors: Record<string, string> = {
-        'OPEN': 'bg-blue-500/10 text-blue-300',
-        'IN_PROGRESS': 'bg-purple-500/10 text-purple-300',
-        'RESOLVED': 'bg-slate-800 text-slate-500',
-        'CLOSED': 'bg-slate-900 text-slate-600',
-    }
-    return (
-      <div className="flex items-center gap-2">
-        <span className={`h-1.5 w-1.5 rounded-full ${s === 'OPEN' ? 'bg-blue-400' : 'bg-slate-600'}`} />
-        <span className={`text-[11px] font-bold uppercase tracking-tight ${colors[s] || 'text-slate-400'}`}>
-          {status.replace('_', ' ')}
-        </span>
-      </div>
-    );
+  const s = status.toUpperCase();
+  const colors: Record<string, string> = {
+    'OPEN': 'bg-blue-500/10 text-blue-300',
+    'IN_PROGRESS': 'bg-purple-500/10 text-purple-300',
+    'RESOLVED': 'bg-slate-800 text-slate-500',
+    'CLOSED': 'bg-slate-900 text-slate-600',
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`h-1.5 w-1.5 rounded-full ${s === 'OPEN' ? 'bg-blue-400' : 'bg-slate-600'}`} />
+      <span className={`text-[11px] font-bold uppercase tracking-tight ${colors[s] || 'text-slate-400'}`}>
+        {status.replace('_', ' ')}
+      </span>
+    </div>
+  );
 }
 
 const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
@@ -48,11 +48,15 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
   return (
     <Link 
       to={`/tickets/${ticket._id}`} 
-      className={`group block h-full transition-all duration-500 ${isFinished ? "opacity-50 grayscale-[80%]" : "opacity-100"}`}
+      className={`group block h-full transition-all duration-500 relative ${isFinished ? "opacity-50 grayscale-[80%]" : "opacity-100"}`}
     >
-      {/* REMOVED: shadow-xl, backdrop-blur 
-          ADDED: Solid background with clear border contrast 
-      */}
+      {/* 🟢 NEW: Trending Badge for Deduplication Logic */}
+      {ticket.reportCount > 1 && (
+        <span className="absolute -top-2 -right-2 z-10 bg-orange-500 text-white text-[10px] px-2 py-1 rounded-full shadow-lg font-bold animate-pulse flex items-center gap-1">
+          🔥 {ticket.reportCount} Reports
+        </span>
+      )}
+
       <div className="bg-slate-900 rounded-xl p-6 h-full flex flex-col justify-between border border-slate-800 group-hover:border-slate-600 group-hover:bg-slate-800/40 transition-all duration-200">
         <div>
           <div className="flex justify-between items-center mb-5">

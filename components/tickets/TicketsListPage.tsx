@@ -17,7 +17,14 @@ const TicketsListPage: React.FC = () => {
         setIsLoading(true);
         const fetchedTickets = await api.getTickets();
 
-        const statusPriority: Record<string, number> = {
+        const priorityWeight: Record<string, number> = {
+          'URGENT': 1,
+          'HIGH': 2,
+          'MEDIUM': 3,
+          'LOW': 4,
+        };
+
+        const statusWeight: Record<string, number> = {
           'OPEN': 1,
           'IN_PROGRESS': 2,
           'RESOLVED': 3,
@@ -25,12 +32,22 @@ const TicketsListPage: React.FC = () => {
         };
 
         const sorted = [...fetchedTickets].sort((a, b) => {
-          const priorityA = statusPriority[a.status.toUpperCase()] || 5;
-          const priorityB = statusPriority[b.status.toUpperCase()] || 5;
+          // 1. Active tickets before resolved/closed
+          const sA = statusWeight[a.status.toUpperCase()] || 5;
+          const sB = statusWeight[b.status.toUpperCase()] || 5;
+          if (sA !== sB) return sA - sB;
 
-          if (priorityA !== priorityB) {
-            return priorityA - priorityB;
-          }
+          // 2. Higher reportCount first (trending/duplicate reports)
+          const rA = a.reportCount ?? 1;
+          const rB = b.reportCount ?? 1;
+          if (rB !== rA) return rB - rA;
+
+          // 3. Higher priority first (URGENT > HIGH > MEDIUM > LOW)
+          const pA = priorityWeight[(a.priority ?? '').toUpperCase()] || 5;
+          const pB = priorityWeight[(b.priority ?? '').toUpperCase()] || 5;
+          if (pA !== pB) return pA - pB;
+
+          // 4. Fallback: newest ticket first
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
 

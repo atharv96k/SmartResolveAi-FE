@@ -12,6 +12,7 @@ export interface User {
   skills?: string[];
 }
 
+
 // Added for UserManagementModal.tsx
 export interface UpdateUserData {
   name?: string;
@@ -45,6 +46,13 @@ export interface Ticket {
   category?: string;
   aiNotes?: string;
   
+  isDuplicate: boolean;      // To identify if this is a linked ticket
+  parentTicket?: {           // Populated for duplicate tickets
+    _id: string;
+    title: string;
+    status: string;
+  };
+  reportCount: number;
   // Updated/Added fields based on your error logs:
   requiredSkills?: string[];
   relatedSkills?: string[];    // Added (referenced in TicketCard and DetailPage)
